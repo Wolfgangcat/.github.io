@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Full Screen 3D Slideshow</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #000000; 
+            color: #fff;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slideshow-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            display: block;
+        }
+
+        .fast-fade {
+            animation: quickFade 0.3s ease-in-out;
+        }
+
+        @keyframes quickFade {
+            from { opacity: 0.6; }
+            to { opacity: 1; }
+        }
+
+        .arrow {
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            height: 100%; 
+            width: 80px;
+            color: rgba(255, 255, 255, 0.2); 
+            font-weight: bold;
+            font-size: 40px;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0);
+            border: none;
+            transition: all 0.2s ease;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .arrow:hover {
+            background-color: rgba(0, 0, 0, 0.4);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .prev { left: 0; }
+        .next { right: 0; }
+
+        .caption {
+            font-size: 16px;
+            padding: 10px 24px;
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            z-index: 12;
+            pointer-events: none; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slideshow-container" id="slideshow">
+        <!-- Slides will be generated here automatically by JavaScript -->
+
+        <!-- Navigation Buttons -->
+        <button class="arrow prev" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="arrow next" onclick="changeSlide(1)">&#10095;</button>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION: CHANGE THIS NUMBER totalSlides LATER
+        // ==========================================
+        const totalSlides = 32; 
+        const imageFolder = "assets/img/stereo/";
+
+        // Build the HTML slides using JavaScript
+        const container = document.getElementById("slideshow");
+        // Find the previous arrow so we can insert slides cleanly before the buttons
+        const prevButton = container.querySelector(".prev");
+
+        for (let i = 1; i <= totalSlides; i++) {
+    // Converts numbers like 1, 2, 3 into strings like "01", "02", "03"
+    const fileNumber = String(i).padStart(2, '0');
+    
+    // Create slide structural container
+    const slideDiv = document.createElement("div");
+    slideDiv.className = "slide fast-fade";
+    
+    // Generate the image tag
+    const img = document.createElement("img");
+    img.src = `${imageFolder}${fileNumber}.jpg`;
+    img.alt = `3D Image ${fileNumber}`;
+    
+    // Generate the caption overlay
+    const captionDiv = document.createElement("div");
+    captionDiv.className = "caption";
+    captionDiv.innerText = `3D Slide ${fileNumber}`;
+    
+    // Assemble elements
+    slideDiv.appendChild(img);
+    slideDiv.appendChild(captionDiv);
+    
+    // CORRECTED: Inject slide right before the navigation buttons, building 01, 02, 03 sequentially
+    container.insertBefore(slideDiv, prevButton);
+}
+
+
+        // ==========================================
+        // SLIDESHOW CONTROLLER ENGINE
+        // ==========================================
+        let slideIndex = 0;
+        let slideTimer;
+        const slides = document.getElementsByClassName("slide");
+
+        // Start initialization
+        showSlides(slideIndex);
+
+        function showSlides(index) {
+            if (index >= slides.length) { slideIndex = 0; }
+            if (index < 0) { slideIndex = slides.length - 1; }
+
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+
+            slides[slideIndex].style.display = "block";
+
+            // 10 Second Interval
+            clearTimeout(slideTimer);
+            slideTimer = setTimeout(() => {
+                slideIndex++;
+                showSlides(slideIndex);
+            }, 10000); 
+        }
+
+        function changeSlide(step) {
+            slideIndex += step;
+            showSlides(slideIndex);
+        }
+
+        // Keyboard navigation helper
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+    </script>
+
+</body>
+</html>
