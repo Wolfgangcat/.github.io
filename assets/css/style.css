@@ -722,7 +722,8 @@ section {
 # Contact
 --------------------------------------------------------------*/
 .contact {
-  padding-bottom: 130px;
+  padding-bottom: 200px;
+  min-height: 100vh; /* Forces the contact section to be at least 100% of the viewport height */
 }
 .contact .info {
   padding: 30px;
